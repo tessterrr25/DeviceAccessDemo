@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang = "en">
+<html lang="en">
 <head>
-    <meta charset"UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Device Access Demo</title>
+    <title>Personal Data Collection</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -11,172 +11,282 @@
             margin: 0 auto;
             padding: 20px;
             line-height: 1.6;
-        }
-        h1 {
             color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
             text-align: center;
         }
         .container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .card {
-            background: #f9f9f9;
+            background-color: #f9f9f9;
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .card h2 {
-            margin-top: 0;
-            color: #444;
+        .form-group {
+            margin-bottom: 15px;
         }
-        video, #map {
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
             width: 100%;
-            max-width: 400px;
-            height: 300px;
-            background-color: #ddd;
-            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
         }
-        .status {
-            margin-top: 10px;
-            font-style: italic;
+        textarea {
+            height: 100px;
+            resize: vertical;
         }
-        .status.success {
-            color: green;
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto 0;
+            transition: background-color 0.3s;
         }
-        .status.error {
+        button:hover {
+            background-color: #2980b9;
+        }
+        .success-message {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .error-message {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .required::after {
+            content: " *";
             color: red;
         }
-        audio {
-            width: 100%;
-            margin-top: 10px;
+        .preview-container {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            display: none;
+        }
+        .preview-container h3 {
+            margin-top: 0;
+        }
+        pre {
+            background-color: #e0e0e0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
         }
     </style>
 </head>
 <body>
-    <h1>Device Access Demo</h1>
-    <p>This website attempts to access your device's location, camera, and microphone immediately on page load.</p>
+    <h1>Personal Data Collection</h1>
+    <p>Please fill out the form below with your personal information. Your data will be securely processed for development purposes.</p>
     
     <div class="container">
-        <div class="card">
-            <h2>Location Access</h2>
-            <div id="locationStatus" class="status">Attempting to access location...</div>
-            <div id="map"></div>
+        <form id="personalDataForm">
+            <div class="form-group">
+                <label for="fullName" class="required">Full Name</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email" class="required">Email Address</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone">
+            </div>
+            
+            <div class="form-group">
+                <label for="birthDate">Date of Birth</label>
+                <input type="date" id="birthDate" name="birthDate">
+            </div>
+            
+            <div class="form-group">
+                <label for="address">Home Address</label>
+                <textarea id="address" name="address"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="occupation">Occupation</label>
+                <input type="text" id="occupation" name="occupation">
+            </div>
+            
+            <div class="form-group">
+                <label for="income">Annual Income Range</label>
+                <select id="income" name="income">
+                    <option value="">--Select an option--</option>
+                    <option value="under25k">Under $25,000</option>
+                    <option value="25k-50k">$25,000 - $50,000</option>
+                    <option value="50k-75k">$50,000 - $75,000</option>
+                    <option value="75k-100k">$75,000 - $100,000</option>
+                    <option value="over100k">Over $100,000</option>
+                    <option value="notDisclose">Prefer not to say</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="interests">Interests (Hobbies, Activities)</label>
+                <textarea id="interests" name="interests"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="deviceInfo">
+                    <input type="checkbox" id="deviceInfo" name="deviceInfo" checked>
+                    Include device information in data
+                </label>
+            </div>
+            
+            <button type="submit" id="submitButton">Submit Information</button>
+        </form>
+        
+        <div id="successMessage" class="success-message">
+            Your information has been successfully submitted!
         </div>
-
-        <div class="card">
-            <h2>Camera Access</h2>
-            <div id="cameraStatus" class="status">Attempting to access camera...</div>
-            <video id="videoElement" autoplay playsinline></video>
+        
+        <div id="errorMessage" class="error-message">
+            There was an error processing your information. Please try again.
         </div>
-
-        <div class="card">
-            <h2>Microphone Access</h2>
-            <div id="microphoneStatus" class="status">Attempting to access microphone...</div>
-            <audio id="audioPlayback" controls></audio>
-        </div>
-    </div>    
+    </div>
+    
+    <div id="previewContainer" class="preview-container">
+        <h3>Data Preview</h3>
+        <p>The following data will be exported to a .txt file:</p>
+        <pre id="dataPreview"></pre>
+        <button id="downloadButton">Download Data as .txt</button>
+    </div>
+    
     <script>
-        // Try to access all features immediately on page load
-        window.addEventListener('load', () => {
-            // Attempt location access
-            accessLocation();
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('personalDataForm');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const previewContainer = document.getElementById('previewContainer');
+            const dataPreview = document.getElementById('dataPreview');
+            const downloadButton = document.getElementById('downloadButton');
             
-            // Attempt camera access
-            accessCamera();
-            
-            // Attempt microphone access
-            accessMicrophone();
-        });
-        // Location function
-        function accessLocation() {
-            const locationStatus = document.getElementById('locationStatus');
-            const map = document.getElementById('map');
-            
-            if (!navigator.geolocation) {
-                locationStatus.textContent = 'Geolocation not supported by this browser';
-                locationStatus.className = 'status error';
-                return;
+            // Collect browser and device information
+            function getDeviceInfo() {
+                return {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    screenWidth: window.screen.width,
+                    screenHeight: window.screen.height,
+                    language: navigator.language,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    dateTime: new Date().toISOString()
+                };
             }
             
-            // Try to get the current position
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
+            // Format the collected data for output
+            function formatData(formData, includeDeviceInfo) {
+                let output = "PERSONAL DATA COLLECTION\n";
+                output += "========================\n\n";
+                output += "Submitted: " + new Date().toLocaleString() + "\n\n";
+                output += "USER INFORMATION:\n";
+                output += "----------------\n";
+                
+                // Add form data
+                for (const [key, value] of formData.entries()) {
+                    if (key === 'deviceInfo') continue;
                     
-                    locationStatus.textContent = `Location accessed: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-                    locationStatus.className = 'status success';
+                    let label = key.replace(/([A-Z])/g, ' $1').replace(/^./, function(str) {
+                        return str.toUpperCase();
+                    });
                     
-                    map.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 18px; text-align: center;">
-                        Location coordinates:<br>
-                        Latitude: ${latitude.toFixed(6)}<br>
-                        Longitude: ${longitude.toFixed(6)}
-                    </div>`;
-                },
-                (error) => {
-                    locationStatus.textContent = `Error accessing location: ${error.message}`;
-                    locationStatus.className = 'status error';
+                    output += label + ": " + value + "\n";
                 }
-            );
-        }
-        // Camera function
-        async function accessCamera() {
-            const videoElement = document.getElementById('videoElement');
-            const cameraStatus = document.getElementById('cameraStatus');
-            
-            try {
-                // Attempt to access the camera directly
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                videoElement.srcObject = stream;
-                cameraStatus.textContent = 'Camera accessed successfully';
-                cameraStatus.className = 'status success';
-            } catch (error) {
-                cameraStatus.textContent = `Error accessing camera: ${error.message}`;
-                cameraStatus.className = 'status error';
+                
+                // Add device info if requested
+                if (includeDeviceInfo) {
+                    const deviceInfo = getDeviceInfo();
+                    output += "\nDEVICE INFORMATION:\n";
+                    output += "------------------\n";
+                    for (const [key, value] of Object.entries(deviceInfo)) {
+                        let label = key.replace(/([A-Z])/g, ' $1').replace(/^./, function(str) {
+                            return str.toUpperCase();
+                        });
+                        output += label + ": " + value + "\n";
+                    }
+                }
+                
+                return output;
             }
-        }
-         // Microphone function
-         async function accessMicrophone() {
-            const microphoneStatus = document.getElementById('microphoneStatus');
-            const audioPlayback = document.getElementById('audioPlayback');
             
-            try {
-                // Attempt to access the microphone directly
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            // Handle form submission
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
                 
-                // Create a MediaRecorder and start recording immediately
-                const mediaRecorder = new MediaRecorder(stream);
-                const audioChunks = [];
+                try {
+                    const formData = new FormData(form);
+                    const includeDeviceInfo = formData.has('deviceInfo');
+                    const formattedData = formatData(formData, includeDeviceInfo);
+                    
+                    // Display preview
+                    dataPreview.textContent = formattedData;
+                    previewContainer.style.display = 'block';
+                    successMessage.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                    
+                    // Scroll to preview
+                    previewContainer.scrollIntoView({ behavior: 'smooth' });
+                    
+                } catch (error) {
+                    console.error("Error processing form:", error);
+                    errorMessage.style.display = 'block';
+                    successMessage.style.display = 'none';
+                }
+            });
+            
+            // Handle download button click
+            downloadButton.addEventListener('click', function() {
+                const formData = new FormData(form);
+                const includeDeviceInfo = formData.has('deviceInfo');
+                const formattedData = formatData(formData, includeDeviceInfo);
                 
-                mediaRecorder.addEventListener('dataavailable', event => {
-                    audioChunks.push(event.data);
-                });
+                // Create filename with timestamp
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const filename = `personal-data-${timestamp}.txt`;
                 
-                mediaRecorder.addEventListener('stop', () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    audioPlayback.src = audioUrl;
-                    microphoneStatus.textContent = 'Microphone accessed successfully';
-                    microphoneStatus.className = 'status success';
-                });
+                // Create blob and download
+                const blob = new Blob([formattedData], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
                 
-                // Start recording for 5 seconds
-                mediaRecorder.start();
-                microphoneStatus.textContent = 'Microphone accessed and recording...';
-                
-                // Stop recording after 5 seconds
-                setTimeout(() => {
-                    mediaRecorder.stop();
-                }, 360000);
-                
-            } catch (error) {
-                microphoneStatus.textContent = `Error accessing microphone: ${error.message}`;
-                microphoneStatus.className = 'status error';
-            }
-        }
+                // Clean up
+                setTimeout(function() {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 0);
+            });
+        });
     </script>
 </body>
 </html>
