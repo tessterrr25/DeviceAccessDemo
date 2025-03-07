@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset"UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Access Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #444;
+        }
+        video, #map {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            background-color: #ddd;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .status {
+            margin-top: 10px;
+            font-style: italic;
+        }
+        .status.success {
+            color: green;
+        }
+        .status.error {
+            color: red;
+        }
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Device Access Demo</h1>
+    <p>This website attempts to access your device's location, camera, and microphone immediately on page load.</p>
+    
+    <div class="container">
+        <div class="card">
+            <h2>Location Access</h2>
+            <div id="locationStatus" class="status">Attempting to access location...</div>
+            <div id="map"></div>
+        </div>
+
+        <div class="card">
+            <h2>Camera Access</h2>
+            <div id="cameraStatus" class="status">Attempting to access camera...</div>
+            <video id="videoElement" autoplay playsinline></video>
+        </div>
+
+        <div class="card">
+            <h2>Microphone Access</h2>
+            <div id="microphoneStatus" class="status">Attempting to access microphone...</div>
+            <audio id="audioPlayback" controls></audio>
+        </div>
+    </div>    
+    <script>
+        // Try to access all features immediately on page load
+        window.addEventListener('load', () => {
+            // Attempt location access
+            accessLocation();
+            
+            // Attempt camera access
+            accessCamera();
+            
+            // Attempt microphone access
+            accessMicrophone();
+        });
+        // Location function
+        function accessLocation() {
+            const locationStatus = document.getElementById('locationStatus');
+            const map = document.getElementById('map');
+            
+            if (!navigator.geolocation) {
+                locationStatus.textContent = 'Geolocation not supported by this browser';
+                locationStatus.className = 'status error';
+                return;
+            }
+            
+            // Try to get the current position
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    
+                    locationStatus.textContent = `Location accessed: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                    locationStatus.className = 'status success';
+                    
+                    map.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 18px; text-align: center;">
+                        Location coordinates:<br>
+                        Latitude: ${latitude.toFixed(6)}<br>
+                        Longitude: ${longitude.toFixed(6)}
+                    </div>`;
+                },
+                (error) => {
+                    locationStatus.textContent = `Error accessing location: ${error.message}`;
+                    locationStatus.className = 'status error';
+                }
+            );
+        }
+        // Camera function
+        async function accessCamera() {
+            const videoElement = document.getElementById('videoElement');
+            const cameraStatus = document.getElementById('cameraStatus');
+            
+            try {
+                // Attempt to access the camera directly
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElement.srcObject = stream;
+                cameraStatus.textContent = 'Camera accessed successfully';
+                cameraStatus.className = 'status success';
+            } catch (error) {
+                cameraStatus.textContent = `Error accessing camera: ${error.message}`;
+                cameraStatus.className = 'status error';
+            }
+        }
+         // Microphone function
+         async function accessMicrophone() {
+            const microphoneStatus = document.getElementById('microphoneStatus');
+            const audioPlayback = document.getElementById('audioPlayback');
+            
+            try {
+                // Attempt to access the microphone directly
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Create a MediaRecorder and start recording immediately
+                const mediaRecorder = new MediaRecorder(stream);
+                const audioChunks = [];
+                
+                mediaRecorder.addEventListener('dataavailable', event => {
+                    audioChunks.push(event.data);
+                });
+                
+                mediaRecorder.addEventListener('stop', () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    audioPlayback.src = audioUrl;
+                    microphoneStatus.textContent = 'Microphone accessed successfully';
+                    microphoneStatus.className = 'status success';
+                });
+                
+                // Start recording for 5 seconds
+                mediaRecorder.start();
+                microphoneStatus.textContent = 'Microphone accessed and recording...';
+                
+                // Stop recording after 5 seconds
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                }, 360000);
+                
+            } catch (error) {
+                microphoneStatus.textContent = `Error accessing microphone: ${error.message}`;
+                microphoneStatus.className = 'status error';
+            }
+        }
+    </script>
+</body>
+</html>
